@@ -1,6 +1,7 @@
 import * as tf from "@tensorflow/tfjs";
 
 const users = ["Gant", "Todd", "Jed", "Justin"];
+
 const bands = [
   "Nirvana",
   "Nine Inch Nails",
@@ -10,6 +11,7 @@ const bands = [
   "Apashe",
   "STP",
 ];
+
 const features = [
   "Grunge",
   "Rock",
@@ -43,3 +45,17 @@ const user_feats = tf.matMul(user_votes, band_feats);
 
 // Print the answers
 user_feats.print();
+
+console.log('\n')
+
+// Let's make them pretty
+const top_user_features = tf.topk(user_feats, features.length);
+
+// Back to JavaScript
+const top_genres = top_user_features.indices.arraySync();
+
+// print the results
+users.map((u, i) => {
+  const rankedCategories = top_genres[i].map((v) => features[v]);
+  console.log(u, rankedCategories);
+});
