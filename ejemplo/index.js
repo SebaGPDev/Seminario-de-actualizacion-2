@@ -1,19 +1,19 @@
-const btn = document.getElementById("btn");
-const model = tf.sequential();
+// const btn = document.getElementById("btn");
+// const model = tf.sequential();
 
-async function loadData() {
-  const response = await fetch("./data.json");
-  const data = await response.json();
-  const xs = tf.tensor(data.datos.entradas, [6, 1]);
-//   const ys = tf.tensor(data.salidas, [6, 1]);
+// async function loadData() {
+//   const response = await fetch("./data.json");
+//   const data = await response.json();
+//   const xs = tf.tensor(data.datos.entradas, [6, 1]);
+// //   const ys = tf.tensor(data.salidas, [6, 1]);
 
-console.log(data)
+// console.log(data)
 
-return { xs, ys };
+// return { xs, ys };
 
-}
+// }
 
-loadData()
+// loadData()
 
 
 
@@ -35,3 +35,18 @@ loadData()
 //   const output = model.predict(tf.tensor2d([input], [1, 1])).dataSync()[0];
 //   document.getElementById("micro-out-div").innerText = output;
 // }
+
+// import { jsonData } from './getData.js';
+
+// console.log(jsonData)
+
+import fs from 'fs';
+
+const data = fs.readFileSync('data.json', 'utf8');
+const jsonData = JSON.parse(data);
+
+datos = {}
+datos.jsonData
+console.log(jsonData);
+
+// export.modules = datos
