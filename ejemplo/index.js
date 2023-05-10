@@ -1,52 +1,40 @@
-// const btn = document.getElementById("btn");
-// const model = tf.sequential();
+let datos = null
 
-// async function loadData() {
-//   const response = await fetch("./data.json");
-//   const data = await response.json();
-//   const xs = tf.tensor(data.datos.entradas, [6, 1]);
-// //   const ys = tf.tensor(data.salidas, [6, 1]);
+async function obtenerDatos() {
+  try {
+    const response = await fetch("./data.json");
+    const data = await response.json();
+    datos =  data
+  } catch (error) {
+    console.error("Error al cargar el archivo JSON:", error);
+  }
+}
 
-// console.log(data)
+// document.getElementById("btn").addEventListener("click", obtenerDatos);
 
-// return { xs, ys };
+// Create a simple model.
+const model = tf.sequential();
 
-// }
+// Train the model using the data.
+const entrenar = async () => {
+    console.log(datos);
 
-// loadData()
+  model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
 
+  // Prepare the model for training: Specify the loss and the optimizer.
+  model.compile({ loss: "meanSquaredError", optimizer: "sgd" });
 
+  // Generate some synthetic data for training. (y = 2x - 1)
+  const xs = tf.tensor2d([-1, 0, 1, 2, 3, 4], [1, 1]);
+  const ys = tf.tensor2d([-3, -1, 1, 3, 5, 7], [1, 1]);
 
-// async function entrenar() {
-//   const data = await loadData();
+  await model.fit(xs, ys, { epochs: 250 });
 
-//   model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
+  document.getElementById("res").innerText = "Entrenamiento terminado";
+};
 
-//   // Prepare the model for training: Specify the loss and the optimizer.
-//   model.compile({ loss: "meanSquaredError", optimizer: "sgd" });
-
-//   // Train the model using the data.
-//   await model.fit(data.xs, data.ys, { epochs: 250 });
-//   alert("terminó");
-// }
-
-// function predecir() {
-//   const input = document.getElementById("input").value;
-//   const output = model.predict(tf.tensor2d([input], [1, 1])).dataSync()[0];
-//   document.getElementById("micro-out-div").innerText = output;
-// }
-
-// import { jsonData } from './getData.js';
-
-// console.log(jsonData)
-
-import fs from 'fs';
-
-const data = fs.readFileSync('data.json', 'utf8');
-const jsonData = JSON.parse(data);
-
-datos = {}
-datos.jsonData
-console.log(jsonData);
-
-// export.modules = datos
+const predecir = () => {
+  document.getElementById("micro-out-div").innerText = model
+    .predict(tf.tensor2d([20], [1, 1]))
+    .dataSync();
+};

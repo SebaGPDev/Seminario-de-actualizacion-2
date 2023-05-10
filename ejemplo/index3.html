@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Entrenamiento de TensorFlow.js en el navegador</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+</head>
+<body>
+  <script>
+    async function trainModel() {
+      // Cargar el JSON
+      const response = await fetch('./data.json');
+      const data = await response.json();
+
+      // Obtener las entradas y salidas del JSON
+      const inputs = data.map(item => {
+        const hexColor = item.input;
+        // Convertir el código de color hexadecimal a un número
+        const numericValue = parseInt(hexColor.slice(1), 16);
+        return numericValue;
+      });
+
+      const outputs = data.map(item => item.output);
+
+      // Convertir los datos a tensores de TensorFlow.js
+      const xs = tf.tensor2d(inputs, [inputs.length, 1]);
+      const ys = tf.oneHot(tf.tensor1d(outputs, 'int32'), 2); // Ajusta el número de clases según sea necesario
+
+      // Definir el modelo
+      const model = tf.sequential();
+      model.add(tf.layers.dense({ units: 16, activation: 'relu', inputShape: [1] }));
+      model.add(tf.layers.dense({ units: 2, activation: 'softmax' })); // Ajusta el número de unidades según el número de clases
+
+      // Compilar el modelo
+      model.compile({ optimizer: 'adam', loss: 'categoricalCrossentropy', metrics: ['accuracy'] });
+
+      // Entrenar el modelo
+      await model.fit(xs, ys, { epochs: 10, batchSize: 32 });
+
+      // Evaluar el rendimiento del modelo
+      const evalResult = model.evaluate(xs, ys);
+      console.log('Loss:', evalResult[0].dataSync()[0]);
+      console.log('Accuracy:', evalResult[1].dataSync()[0]);
+
+      // Realizar predicciones con nuevos datos
+      const newInputs = [/* Agrega aquí los nuevos valores de entrada */];
+      const newInputTensor = tf.tensor2d(newInputs, [newInputs.length, 1]);
+      const predictions = model.predict(newInputTensor);
+      const predictedLabels = tf.argMax(predictions, axis = 1).dataSync();
+      console.log('Predicted Labels:', predictedLabels);
+    }
+
+    trainModel().catch(err => console.error(err));
+  </script>
+</body>
+</html>
